@@ -1,0 +1,9 @@
+# Excluding virtualenv data
+
+**/bin/
+**/include/
+**/lib/
+**/*.conf
+**/pip-selfcheck.json
+**/__pycache__/
+**/share/

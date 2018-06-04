@@ -1,0 +1,30 @@
+# Config file for file_maintenance.py
+
+[settings]
+
+# source_dir 
+# Will be the location the program will look for files
+# to do maintenance on
+# E.g /home/<username>/myfiles/*
+# The * (wild card) at end is important to look for the sub files and 
+# folders with glob, the same model applies to the dest_dir property
+source_dir=/home/<username>/your_file_u_want_to_maintain/*
+
+# dest_dir
+# This is property is for setting a destination directory in case
+# you want to move the files to a different location
+# It follows the same convention as the source_dir property.
+# Please see source_dir property for more info
+dest_dir=/home/<username>/location_where_files_can_be_moved_too/*
+
+# include_types
+# This property allows you to set extension of files you want to keep
+# when running the renaming process
+# It can be what ever extension you want
+include_types=doc,mp3,xlsx,xls,avi
+
+# exclude_types
+# This property is for putting in extensions you do not want to keep
+# It can be what ever extensions you want
+exclude_types=nfo,jpg
+
