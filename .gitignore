@@ -1,5 +1,6 @@
 # Excluding virtualenv data
 
+**/.idea/
 **/bin/
 **/include/
 **/lib/
