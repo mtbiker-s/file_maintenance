@@ -7,6 +7,7 @@ from configparser import ConfigParser
 from utils import Utils
 import shutil
 
+
 class FileMaintenance:
     """
     This class will provide a way to Rename files or directories, Move those files or directories
@@ -19,7 +20,7 @@ class FileMaintenance:
         print(conf_file_name)
         self.config = ConfigParser()
         self.config.read(conf_file_name)
-        
+
         self.script_dir = os.getcwd()
         self.source_dir_to_use = self.config.get('settings', 'source_dir')
 
@@ -45,27 +46,12 @@ class FileMaintenance:
         else:
             self.main()
 
-
-    # def process_move_data(self):
-    #     """
-    #     This function will process the moving of data
-    #     :return:
-    #     """
-    #     print('Process not implemented yet')
-    #     self.ask_to_continue('move')
-
-
     def process_rename_data(self):
         """
         This function will process the renaming of data
         :return:
         """
 
-        # dirs = self.get_dirs(self.source_dir_to_use)
-        #
-        # dirs_available = self.create_dir_dict(dirs)
-        #
-        # selected_data_to_rename = self.display_dir_dict_info(dirs_available)
         selected_data_to_rename = self.get_selected_data(self.source_dir_to_use)
 
         self.rename_data(selected_data_to_rename)
@@ -78,7 +64,6 @@ class FileMaintenance:
         selected_data_to_move = self.get_selected_data(self.source_dir_to_use)
 
         self.move_data(selected_data_to_move)
-
 
     def get_selected_data(self, dir_to_use):
         """
@@ -100,9 +85,7 @@ class FileMaintenance:
             print('Will use ' + use_dir)
             selected_data_to_move = use_dir
 
-
         return selected_data_to_move
-
 
     def process_delete_data(self):
         """
@@ -140,11 +123,11 @@ class FileMaintenance:
         return dir_dict
 
     def display_dir_dict_info(self, dir_dict):
-        
+
         print()
         print('(Key) - Dir/FileName - [Type]')
 
-        for key, value  in dir_dict.items():
+        for key, value in dir_dict.items():
             if os.path.isdir(value):
                 value_type = '[Dir]'
             else:
@@ -157,7 +140,7 @@ class FileMaintenance:
 
         print('You have selected')
         print(dir_dict[selected])
-        
+
         data_to_mod = dir_dict[selected]
         return str(data_to_mod)
 
@@ -183,10 +166,7 @@ class FileMaintenance:
 
         print('Would you like to select a sub directory of ' + data_to_mod + '?')
 
-
-
         return str(data_to_mod)
-
 
     def move_data(self, data_to_move):
         """
@@ -198,7 +178,7 @@ class FileMaintenance:
         print('You\'ve selected to move : ' + data_to_move)
         print('You can move to the availble directories:')
 
-        dest_dir = self.config.get('settings','dest_dir')
+        dest_dir = self.config.get('settings', 'dest_dir')
 
         move_to_dir = self.get_selected_data(dest_dir)
 
@@ -210,12 +190,12 @@ class FileMaintenance:
             answer = input('Please enter "y" for Yes or "n" for No : ')
             if answer == 'y' or answer == 'Y':
                 keep_looking = True
-                move_to_dir = self.get_selected_data(os.path.join(move_to_dir,'*'))
+                move_to_dir = self.get_selected_data(os.path.join(move_to_dir, '*'))
             else:
                 keep_looking = False
                 break
 
-
+        print()
         print('You are about to move the data.')
         answer = input('Please enter "y" to proceed, or "n" to select a different option : ')
 
@@ -225,7 +205,7 @@ class FileMaintenance:
                 print('Moving ' + data_to_move)
                 print('to')
                 print(move_to_dir)
-                shutil.move(data_to_move,move_to_dir)
+                shutil.move(data_to_move, move_to_dir)
                 print('File or Directory move was successful!')
                 print()
                 self.ask_to_continue('move')
@@ -237,9 +217,8 @@ class FileMaintenance:
         else:
             self.ask_to_continue('move')
 
-
     def rename_data(self, data_to_modify):
-        
+
         len_last_fwd_slash = data_to_modify.rfind('/')
 
         dir_path = data_to_modify[:len_last_fwd_slash]
@@ -248,7 +227,6 @@ class FileMaintenance:
         new_name = input('Enter new name :')
 
         new_name_with_path = os.path.join(dir_path, new_name)
-
 
         # Do a rename of the folder here
         # Ask first though
@@ -263,7 +241,7 @@ class FileMaintenance:
                 print()
                 print('Attempting to rename to...')
                 print(new_name_with_path)
-                os.rename(data_to_modify,new_name_with_path)
+                os.rename(data_to_modify, new_name_with_path)
                 print('Renaming was succesful!')
             except ValueError as e:
                 print('Could not rename')
@@ -275,15 +253,25 @@ class FileMaintenance:
 
             if os.path.isdir(new_name_with_path):
 
-                look_for = os.path.join(new_name_with_path,'*')
-                files_in_dir = self.get_dirs(look_for)
-            
-                for data in files_in_dir:
-                    # Gonna delete the files that we don't need
-                    self.delete_excluded_files(data)
-                    self.rename_included_files(data,new_name)
+                print('')
+                print('Would you like to rename sub files and directories of : ')
+                print(new_name_with_path)
+                answer = input('Enter "y" for Yes or "n" for "No" : ')
+                print()
 
-            #Add logic here to ask if you would like
+                if answer == 'y' or answer == 'Y':
+                    print('Attempting to rename valid sub files and directories...')
+                    look_for = os.path.join(new_name_with_path, '*')
+                    files_in_dir = self.get_dirs(look_for)
+
+                    for data in files_in_dir:
+                        # Gonna delete the files that we don't need
+                        self.delete_excluded_files(data)
+                        self.rename_included_files(data, new_name)
+                else:
+                    print('Sub files and directories will not be renamed.')
+
+            # Add logic here to ask if you would like
             # to rename another file or quit
             self.ask_to_continue('rename')
 
@@ -291,7 +279,6 @@ class FileMaintenance:
             print('No worries, you can run program at a later time.')
             print('Exiting...')
             sys.exit()
-
 
     def delete_data(self, data_to_delete):
         """
@@ -315,7 +302,6 @@ class FileMaintenance:
                 os.remove(data_to_delete)
                 print('File was removed.')
 
-
             # Will ask to continue with another delete
             self.ask_to_continue('delete')
 
@@ -323,10 +309,9 @@ class FileMaintenance:
             print('Something went wrong trying to delete ' + data_to_delete)
             print(e)
 
-        
     def ask_to_continue(self, process_type):
         print()
-        print('Would you to like '+process_type+' another file or directory?')
+        print('Would you to like ' + process_type + ' another file or directory?')
         answer = input('Enter "y" for Yes, "q" for Quit or "e" for Something Else : ')
         if answer == 'y' or answer == 'Y':
             if process_type == 'delete':
@@ -344,13 +329,12 @@ class FileMaintenance:
             print('Exiting program...')
             sys.exit()
 
-
     def delete_excluded_files(self, file_location):
 
-        exclude_types = self.config.get('settings','exclude_types')
-        
+        exclude_types = self.config.get('settings', 'exclude_types')
+
         exclude = exclude_types.split(',')
-        
+
         for file_type in exclude:
 
             if str(file_location).endswith(file_type):
@@ -373,7 +357,6 @@ class FileMaintenance:
         old_data_name = file_location[len_last_fwd_slash:]
         dir_path = file_location[:len_last_fwd_slash]
 
-
         include_types = self.config.get('settings', 'include_types')
 
         include = include_types.split(',')
@@ -387,7 +370,7 @@ class FileMaintenance:
                 print(file_location)
                 try:
                     print()
-                    new_name_with_path = os.path.join(dir_path,new_name + '.' + file_type)
+                    new_name_with_path = os.path.join(dir_path, new_name + '.' + file_type)
                     os.rename(file_location, new_name_with_path)
                     print('File was renamed to :')
                     print(new_name_with_path)
@@ -396,8 +379,6 @@ class FileMaintenance:
                     print('Something went wrong trying to rename the file')
                     print(file_location)
                     print(e)
-
-                
 
 
 if __name__ == '__main__':
